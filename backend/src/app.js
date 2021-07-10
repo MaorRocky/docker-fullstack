@@ -1,11 +1,14 @@
 const express = require('express');
 const cors = require('cors');
-const PORT = 3001;
+const mongoose = require('mongoose');
+
+const PORT = process.env.PORT || 3001;
+
 const app = express();
 
 app.use(cors());
 
-app.get('/test',(req, res) => {
+app.get('/test', (req, res) => {
   res.send('Hello from express');
 });
 
