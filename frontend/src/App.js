@@ -5,22 +5,33 @@ import './App.css';
 
 function App() {
   const [state, setState] = useState('');
+  const [health, setHealth] = useState('fail');
+  const API_URL = process.env.REACT_APP_API_URL || 'localhost';
+  const API_PORT = process.env.REACT_APP_API_PORT || '3001';
+  const API_BASE_ADDRESS = `http://${API_URL}:${API_PORT}`;
 
   useEffect(() => {
-    const API_URL = process.env.REACT_APP_API_URL || 'localhost';
-    const API_PORT = process.env.REACT_APP_API_PORT || '3001';
-    const API_BASE_ADDRESS = `http://${API_URL}:${API_PORT}`;
-    console.log(`${API_URL}`);
-    console.log(`${API_PORT}`);
-    console.log(`${API_BASE_ADDRESS}`);
-
     const fetchData = async () => {
       const result = await axios(`${API_BASE_ADDRESS}/test`);
       setState(result.data);
     };
     fetchData();
     return () => {};
-  }, [state]);
+  }, [state,API_BASE_ADDRESS]);
+
+  useEffect(() => {
+    const checkHealth = async () => {
+      const result = await axios(`${API_BASE_ADDRESS}/checkhealth`);
+      setHealth(result.data.status);
+    };
+    const timer = setInterval(() => {
+      checkHealth();
+    }, 1000);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [health,API_BASE_ADDRESS ]);
+
   return (
     <div className='App'>
       <header className='App-header'>
@@ -35,6 +46,7 @@ function App() {
           Learn React xx {state}
         </a>
       </header>
+      <h3>{health}</h3>
     </div>
   );
 }
